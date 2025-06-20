@@ -1,0 +1,287 @@
+<!-- Start of Our Heritage Homes Final Chatbot (Bubble-to-Close) -->
+
+<!-- Preload the avatar logo for instant loading inside the chat -->
+<link rel="preload" as="image" href="https://ourheritagehomes.com/wp-content/uploads/2025/03/cropped-OHH-Logo_Icon-3-2.png">
+
+<div id="ohh-chat-widget">
+    <!-- Chat Bubble now contains both open and close icons -->
+    <div id="ohh-chat-bubble">
+        <svg class="open-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="white" width="30px" height="30px">
+            <path d="M256 32C114.6 32 0 125.1 0 240c0 49.6 21.4 95 57 130.7C44.5 421.1 2.7 466 2.2 466.5c-2.2 2.3-2.8 5.7-1.5 8.7S4.8 480 8 480c66.3 0 116-31.8 140.6-51.4 32.7 12.3 69 19.4 107.4 19.4 141.4 0 256-93.1 256-208S397.4 32 256 32z"/>
+        </svg>
+        <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="36px" height="36px">
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+        </svg>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="ohh-chat-window" class="hidden">
+        <div class="ohh-chat-header">
+            <img src="https://ourheritagehomes.com/wp-content/uploads/2025/06/OHH-Final-Logo_Primary-2-scaled.png" alt="Our Heritage Homes" class="ohh-header-logo-long" loading="lazy" decoding="async">
+            <!-- The 'X' close button is now removed from here -->
+        </div>
+
+        <div id="ohh-chat-messages" class="ohh-chat-messages">
+            <!-- Messages will be added here -->
+        </div>
+
+        <div class="ohh-message-input-area">
+            <textarea id="ohh-user-input" placeholder="Write a message" rows="1"></textarea>
+            <button id="ohh-attach-btn" class="ohh-input-btn" aria-label="Attach file">
+            </button>
+            <button id="ohh-send-btn" class="ohh-input-btn send-circle" aria-label="Send Message">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20px" height="20px">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #1F4557; --accent-color: #C2A461; --bg-color-light: #F0F2F5;
+        --bg-color-white: #FFFFFF; --text-color-dark: #333333; --text-color-light: #FFFFFF;
+        --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    #ohh-chat-bubble {
+        position: fixed; bottom: 20px; right: 25px; width: 60px; height: 60px;
+        background-color: var(--accent-color); color: var(--text-color-light);
+        border-radius: 50%; display: flex; justify-content: center; align-items: center;
+        cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s ease-in-out;
+        z-index: 9999; /* Make bubble always on top */
+    }
+    #ohh-chat-bubble:hover { transform: scale(1.1); }
+    #ohh-chat-window {
+        position: fixed; bottom: 90px; right: 20px; width: 400px; max-width: 90vw;
+        height: 550px; max-height: 80vh; background-color: var(--bg-color-white);
+        border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); display: flex;
+        flex-direction: column; overflow: hidden; font-family: var(--font-family);
+        transition: opacity 0.3s, transform 0.3s; z-index: 9998;
+    }
+    #ohh-chat-window.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
+    .ohh-chat-header {
+        background-color: var(--bg-color-white); padding: 15px; display: flex;
+        justify-content: center; align-items: center; border-bottom: 1px solid #eee;
+        /* Add padding-right to account for removed 'X' button */
+        padding-right: 20px; 
+    }
+    .ohh-header-logo-long { height: 35px; width: auto; }
+    .ohh-chat-messages {
+        flex-grow: 1; padding: 20px; overflow-y: auto; background-color: var(--bg-color-white);
+        display: flex; flex-direction: column;
+    }
+    .ohh-message { display: flex; margin-bottom: 15px; max-width: 85%; align-items: flex-end; }
+    .ohh-avatar {
+        width: 35px; height: 35px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+        margin-right: 10px; background-color: var(--bg-color-white);
+        padding: 5px; box-sizing: border-box;
+    }
+    .ohh-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .ohh-message-content {
+        padding: 12px 15px; border-radius: 18px; font-size: 0.95em; line-height: 1.4; white-space: pre-wrap;
+    }
+    .ohh-message.ohh-bot { align-self: flex-start; }
+    .ohh-message.ohh-bot .ohh-message-content {
+        background-color: var(--bg-color-light); color: var(--text-color-dark); border-bottom-left-radius: 5px;
+    }
+    .ohh-message.ohh-user { align-self: flex-end; }
+    .ohh-message.ohh-user .ohh-message-content {
+        background-color: var(--primary-color); color: var(--text-color-light); border-bottom-right-radius: 5px;
+    }
+    .ohh-message-input-area { display: flex; padding: 10px; border-top: 1px solid #ddd; align-items: flex-end; }
+    #ohh-user-input {
+        flex-grow: 1; border: none; padding: 8px 10px; font-size: 1em;
+        font-family: var(--font-family); background-color: transparent;
+        resize: none; overflow-y: auto; max-height: 75px; line-height: 1.5;
+    }
+    #ohh-user-input:focus { outline: none; }
+    .ohh-input-btn {
+        flex-shrink: 0; background: none; border: none; cursor: pointer; padding: 8px;
+        color: var(--primary-color); display: flex; align-items: center; justify-content: center;
+    }
+    .ohh-input-btn.send-circle {
+        background-color: var(--primary-color); color: white; width: 36px; height: 36px;
+        border-radius: 50%; margin-left: 5px;
+    }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    #ohh-loading-indicator { align-items: center; }
+    #ohh-loading-indicator .ohh-message-content { background: transparent; padding: 0; }
+    #ohh-loading-indicator .ohh-message-content span {
+        display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+        background-color: #b0b0b0; margin: 0 2px; animation: bounce 1.2s infinite ease-in-out;
+    }
+    #ohh-loading-indicator .ohh-message-content span:nth-child(2) { animation-delay: 0.2s; }
+    #ohh-loading-indicator .ohh-message-content span:nth-child(3) { animation-delay: 0.4s; }
+    
+    /* ===== START: NEW CSS FOR ICON SWAPPING ===== */
+    #ohh-chat-bubble svg {
+        position: absolute;
+        transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    #ohh-chat-bubble .open-icon { opacity: 1; transform: rotate(0deg); }
+    #ohh-chat-bubble .close-icon { opacity: 0; transform: rotate(-90deg); }
+    #ohh-chat-bubble.is-open .open-icon { opacity: 0; transform: rotate(90deg); }
+    #ohh-chat-bubble.is-open .close-icon { opacity: 1; transform: rotate(0deg); }
+    /* ===== END: NEW CSS FOR ICON SWAPPING ===== */
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const chatBubble = document.getElementById('ohh-chat-bubble');
+    const chatWindow = document.getElementById('ohh-chat-window');
+    const messagesContainer = document.getElementById('ohh-chat-messages');
+    const userInput = document.getElementById('ohh-user-input');
+    const sendBtn = document.getElementById('ohh-send-btn');
+    
+    const avatarTemplate = document.createElement('div');
+    avatarTemplate.className = 'ohh-avatar';
+    const avatarImg = document.createElement('img');
+    avatarImg.src = 'https://ourheritagehomes.com/wp-content/uploads/2025/03/cropped-OHH-Logo_Icon-3-2.png';
+    avatarImg.alt = 'OHH Bot';
+    avatarImg.loading = 'lazy';
+    avatarImg.decoding = 'async';
+    avatarTemplate.appendChild(avatarImg);
+    
+    const sessionId = 'session_' + Date.now() + Math.random().toString(36).substr(2, 9);
+
+    // This single event listener now controls both opening and closing.
+    chatBubble.addEventListener('click', toggleChatWindow);
+
+    sendBtn.addEventListener('click', handleUserInput);
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleUserInput();
+        }
+    });
+    userInput.addEventListener('input', autoResizeTextarea);
+
+    function autoResizeTextarea() {
+        userInput.style.height = 'auto';
+        userInput.style.height = userInput.scrollHeight + 'px';
+    }
+
+    // This function is now the single point of control for visibility.
+    function toggleChatWindow() {
+        chatWindow.classList.toggle('hidden');
+        chatBubble.classList.toggle('is-open'); // This class triggers the icon swap
+
+        if (!chatWindow.classList.contains('hidden')) {
+            if (messagesContainer.children.length === 0) {
+                 startConversation();
+            }
+            userInput.focus();
+        }
+    }
+    
+    function startConversation() {
+        addBotMessage("Hello! Welcome to Our Heritage Homes. I'm here to assist you");
+        setTimeout(() => {
+            addBotMessage("Before we get started, could I have your name?");
+        }, 300);
+    }
+
+    async function handleUserInput() {
+        const text = userInput.value.trim();
+        if (text === '') return;
+
+        addUserMessage(text);
+        userInput.value = '';
+        userInput.disabled = true;
+        autoResizeTextarea();
+
+        showLoadingIndicator();
+
+        try {
+            const botReplies = await sendMessageToWebhook(text);
+            
+            if (botReplies && botReplies.length > 0) {
+                for (let i = 0; i < botReplies.length; i++) {
+                    if (i === 0) hideLoadingIndicator(); 
+                    await new Promise(resolve => setTimeout(resolve, i === 0 ? 0 : 1000));
+                    addBotMessage(botReplies[i]);
+                }
+            } else {
+                hideLoadingIndicator();
+            }
+        } catch (error) {
+            hideLoadingIndicator();
+            console.error("Error in handleUserInput:", error);
+            addBotMessage("I'm sorry, an error occurred. Please try again later.");
+        } finally {
+             userInput.disabled = false;
+             userInput.focus();
+        }
+    }
+    
+    async function sendMessageToWebhook(messageText) {
+        const webhookUrl = 'https://n8n.doheain.com/webhook/9da115ce-4ae4-401a-8d11-379d94df402e';
+        const payload = { sessionId: sessionId, message: messageText };
+        
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'OHH_Chatbot': '7Y14XRcnGBv0MUo7K11FZkZyZTSQYNHcTmJ5771O1Gul6xwKeR' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error(`Webhook responded with status: ${response.status}`);
+            const responseData = await response.json();
+
+            if (responseData && typeof responseData.output === 'string') {
+                const textBlock = responseData.output;
+                return [textBlock];
+            }
+
+            console.warn("Received unexpected data format from webhook:", responseData);
+            return null;
+        } catch (error) {
+            console.error('Error communicating with or parsing response from webhook:', error);
+            return null;
+        }
+    }
+
+    function showLoadingIndicator() {
+        const loader = document.createElement('div');
+        loader.id = 'ohh-loading-indicator';
+        loader.classList.add('ohh-message', 'ohh-bot');
+        const loaderContent = document.createElement('div');
+        loaderContent.className = 'ohh-message-content';
+        loaderContent.innerHTML = `<span></span><span></span><span></span>`;
+
+        loader.appendChild(avatarTemplate.cloneNode(true));
+        loader.appendChild(loaderContent);
+        messagesContainer.appendChild(loader);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function hideLoadingIndicator() {
+        const loader = document.getElementById('ohh-loading-indicator');
+        if (loader) loader.remove();
+    }
+
+    function addMessage(content, type) {
+        const messageWrapper = document.createElement('div');
+        messageWrapper.classList.add('ohh-message', `ohh-${type}`);
+        
+        if (type === 'bot') {
+            messageWrapper.appendChild(avatarTemplate.cloneNode(true));
+        }
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'ohh-message-content';
+        messageContent.textContent = content;
+        
+        messageWrapper.appendChild(messageContent);
+        messagesContainer.appendChild(messageWrapper);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function addBotMessage(text) { addMessage(text, 'bot'); }
+    function addUserMessage(text) { addMessage(text, 'user'); }
+});
+</script>
+<!-- End of Our Heritage Homes Final Chatbot (Bubble-to-Close) -->
