@@ -18,7 +18,6 @@
     <div id="ohh-chat-window" class="hidden">
         <div class="ohh-chat-header">
             <img src="https://ourheritagehomes.com/wp-content/uploads/2025/06/OHH-Final-Logo_Primary-2-scaled.png" alt="Our Heritage Homes" class="ohh-header-logo-long" loading="lazy" decoding="async">
-            <!-- The 'X' close button is now removed from here -->
         </div>
 
         <div id="ohh-chat-messages" class="ohh-chat-messages">
@@ -39,97 +38,98 @@
 </div>
 
 <style>
-    :root {
-        --primary-color: #1F4557; --accent-color: #C2A461; --bg-color-light: #F0F2F5;
-        --bg-color-white: #FFFFFF; --text-color-dark: #333333; --text-color-light: #FFFFFF;
+    /* MODIFICATION: Moved CSS variables from :root to the main widget container and prepended all selectors with the #ohh-chat-widget ID to avoid conflicts. */
+    #ohh-chat-widget {
+        --primary-color: #1F4557;
+        --accent-color: #C2A461;
+        --bg-color-light: #F0F2F5;
+        --bg-color-white: #FFFFFF;
+        --text-color-dark: #333333;
+        --text-color-light: #FFFFFF;
         --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: var(--font-family) !important; /* Force font family on the widget */
     }
-    #ohh-chat-bubble {
+    #ohh-chat-widget #ohh-chat-bubble {
         position: fixed; bottom: 20px; right: 25px; width: 60px; height: 60px;
         background-color: var(--accent-color); color: var(--text-color-light);
         border-radius: 50%; display: flex; justify-content: center; align-items: center;
         cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s ease-in-out;
-        z-index: 9999; /* Make bubble always on top */
+        z-index: 9999;
     }
-    #ohh-chat-bubble:hover { transform: scale(1.1); }
-    #ohh-chat-window {
+    #ohh-chat-widget #ohh-chat-bubble:hover { transform: scale(1.1); }
+    #ohh-chat-widget #ohh-chat-window {
         position: fixed; bottom: 90px; right: 20px; width: 400px; max-width: 90vw;
         height: 550px; max-height: 80vh; background-color: var(--bg-color-white);
         border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.25); display: flex;
         flex-direction: column; overflow: hidden; font-family: var(--font-family);
         transition: opacity 0.3s, transform 0.3s; z-index: 9998;
     }
-    #ohh-chat-window.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
-    .ohh-chat-header {
+    #ohh-chat-widget #ohh-chat-window.hidden { opacity: 0; transform: translateY(20px); pointer-events: none; }
+    #ohh-chat-widget .ohh-chat-header {
         background-color: var(--bg-color-white); padding: 15px; display: flex;
         justify-content: center; align-items: center; border-bottom: 1px solid #eee;
-        /* Add padding-right to account for removed 'X' button */
         padding-right: 20px; 
     }
-    .ohh-header-logo-long { height: 35px; width: auto; }
-    .ohh-chat-messages {
+    #ohh-chat-widget .ohh-header-logo-long { height: 35px; width: auto; }
+    #ohh-chat-widget .ohh-chat-messages {
         flex-grow: 1; padding: 20px; overflow-y: auto; background-color: var(--bg-color-white);
         display: flex; flex-direction: column;
     }
-    .ohh-message { display: flex; margin-bottom: 15px; max-width: 85%; align-items: flex-end; }
-    .ohh-avatar {
+    #ohh-chat-widget .ohh-message { display: flex; margin-bottom: 15px; max-width: 85%; align-items: flex-end; }
+    #ohh-chat-widget .ohh-avatar {
         width: 35px; height: 35px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
         margin-right: 10px; background-color: var(--bg-color-white);
         padding: 5px; box-sizing: border-box;
     }
-    .ohh-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .ohh-message-content {
+    #ohh-chat-widget .ohh-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    #ohh-chat-widget .ohh-message-content {
         padding: 12px 15px; border-radius: 18px; font-size: 0.95em; line-height: 1.4; white-space: pre-wrap;
     }
-    .ohh-message.ohh-bot { align-self: flex-start; }
-    .ohh-message.ohh-bot .ohh-message-content {
+    #ohh-chat-widget .ohh-message.ohh-bot { align-self: flex-start; }
+    #ohh-chat-widget .ohh-message.ohh-bot .ohh-message-content {
         background-color: var(--bg-color-light); color: var(--text-color-dark); border-bottom-left-radius: 5px;
     }
-    .ohh-message.ohh-user { align-self: flex-end; }
-    .ohh-message.ohh-user .ohh-message-content {
+    #ohh-chat-widget .ohh-message.ohh-user { align-self: flex-end; }
+    #ohh-chat-widget .ohh-message.ohh-user .ohh-message-content {
         background-color: var(--primary-color); color: var(--text-color-light); border-bottom-right-radius: 5px;
     }
-    .ohh-message-input-area { display: flex; padding: 10px; border-top: 1px solid #ddd; align-items: flex-end; }
-    #ohh-user-input {
+    #ohh-chat-widget .ohh-message-input-area { display: flex; padding: 10px; border-top: 1px solid #ddd; align-items: flex-end; }
+    #ohh-chat-widget #ohh-user-input {
         flex-grow: 1; border: none; padding: 8px 10px; font-size: 1em;
         font-family: var(--font-family); background-color: transparent;
         resize: none; overflow-y: auto; max-height: 75px; line-height: 1.5;
     }
-    #ohh-user-input:focus { outline: none; }
-    .ohh-input-btn {
+    #ohh-chat-widget #ohh-user-input:focus { outline: none; }
+    #ohh-chat-widget .ohh-input-btn {
         flex-shrink: 0; background: none; border: none; cursor: pointer; padding: 8px;
         color: var(--primary-color); display: flex; align-items: center; justify-content: center;
     }
-    .ohh-input-btn.send-circle {
+    #ohh-chat-widget .ohh-input-btn.send-circle {
         background-color: var(--primary-color); color: white; width: 36px; height: 36px;
         border-radius: 50%; margin-left: 5px;
     }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-    #ohh-loading-indicator { align-items: center; }
-    #ohh-loading-indicator .ohh-message-content { background: transparent; padding: 0; }
-    #ohh-loading-indicator .ohh-message-content span {
+    @keyframes ohh-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    #ohh-chat-widget #ohh-loading-indicator { align-items: center; }
+    #ohh-chat-widget #ohh-loading-indicator .ohh-message-content { background: transparent; padding: 0; }
+    #ohh-chat-widget #ohh-loading-indicator .ohh-message-content span {
         display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-        background-color: #b0b0b0; margin: 0 2px; animation: bounce 1.2s infinite ease-in-out;
+        background-color: #b0b0b0; margin: 0 2px; animation: ohh-bounce 1.2s infinite ease-in-out;
     }
-    #ohh-loading-indicator .ohh-message-content span:nth-child(2) { animation-delay: 0.2s; }
-    #ohh-loading-indicator .ohh-message-content span:nth-child(3) { animation-delay: 0.4s; }
+    #ohh-chat-widget #ohh-loading-indicator .ohh-message-content span:nth-child(2) { animation-delay: 0.2s; }
+    #ohh-chat-widget #ohh-loading-indicator .ohh-message-content span:nth-child(3) { animation-delay: 0.4s; }
     
-    /* ===== START: NEW CSS FOR ICON SWAPPING ===== */
-    #ohh-chat-bubble svg {
+    #ohh-chat-widget #ohh-chat-bubble svg {
         position: absolute;
         transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
-    #ohh-chat-bubble .open-icon { opacity: 1; transform: rotate(0deg); }
-    #ohh-chat-bubble .close-icon { opacity: 0; transform: rotate(-90deg); }
-    #ohh-chat-bubble.is-open .open-icon { opacity: 0; transform: rotate(90deg); }
-    #ohh-chat-bubble.is-open .close-icon { opacity: 1; transform: rotate(0deg); }
-    /* ===== END: NEW CSS FOR ICON SWAPPING ===== */
-
+    #ohh-chat-widget #ohh-chat-bubble .open-icon { opacity: 1; transform: rotate(0deg); }
+    #ohh-chat-widget #ohh-chat-bubble .close-icon { opacity: 0; transform: rotate(-90deg); }
+    #ohh-chat-widget #ohh-chat-bubble.is-open .open-icon { opacity: 0; transform: rotate(90deg); }
+    #ohh-chat-widget #ohh-chat-bubble.is-open .close-icon { opacity: 1; transform: rotate(0deg); }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
     const chatBubble = document.getElementById('ohh-chat-bubble');
     const chatWindow = document.getElementById('ohh-chat-window');
     const messagesContainer = document.getElementById('ohh-chat-messages');
@@ -164,10 +164,9 @@ document.addEventListener('DOMContentLoaded', function() {
         userInput.style.height = userInput.scrollHeight + 'px';
     }
 
-    // This function is now the single point of control for visibility.
     function toggleChatWindow() {
         chatWindow.classList.toggle('hidden');
-        chatBubble.classList.toggle('is-open'); // This class triggers the icon swap
+        chatBubble.classList.toggle('is-open');
 
         if (!chatWindow.classList.contains('hidden')) {
             if (messagesContainer.children.length === 0) {
